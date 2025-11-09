@@ -1,0 +1,40 @@
+name: Multi-Platform Matrix Build with Artifacts
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    # Matrix build across 3 Node.js versions (can be Python/os variants instead)
+    strategy:
+      matrix:
+        node-version: [14, 16, 18]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # Required identifier step
+      - name: matrix-1ac9c7a
+        run: echo "Building for Node version ${{ matrix.node-version }}"
+
+      - name: Generate build artifact
+        run: |
+          echo "This is the build artifact for Node version ${{ matrix.node-version }}" > output-${{ matrix.node-version }}.txt
+          echo "Generated successfully on $(date)" >> output-${{ matrix.node-version }}.txt
+          cat output-${{ matrix.node-version }}.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-1ac9c7a-v${{ matrix.node-version }}
+          path: output-${{ matrix.node-version }}.txt
